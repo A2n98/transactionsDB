@@ -1,15 +1,15 @@
-package date_base;
+package date.base;
 
 import classes.Transaction;
+import models.TransactionSumModel;
 import org.sqlite.JDBC;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DBworker {
 
     // Константа, в которой хранится адрес подключения
-    private static final String CON_STR = "jdbc:sqlite:transactions.sqlite";
+    private static final String CON_STR = "jdbc:sqlite:trans.sqlite";
 
     // Используем шаблон одиночка, чтобы не плодить множество
     // экземпляров класса DbHandler
@@ -57,5 +57,26 @@ public class DBworker {
         }
     }
 
+    public ArrayList<TransactionSumModel> getTransactionSumModels(){
+        var models = new ArrayList<TransactionSumModel>();
+        try (var statement = this.connection.createStatement()){
+            var resultSet = statement.executeQuery("select sum(Value) as 'sum', Period " +
+                    "from transactions " +
+                    "where Unit = 'Dollars' and Period like '2020.%' and Value is not null " +
+                    "group by Period");
+            while(resultSet.next()){
+                var model = new TransactionSumModel();
+                model.sum = Float.parseFloat(resultSet.getString("sum"));
+                model.month = resultSet.getString("Period");
+                models.add(model);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return models;
+    }
 
+    public void printTask2(){
+
+    }
 }
