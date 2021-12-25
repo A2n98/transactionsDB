@@ -1,6 +1,7 @@
 package date.base;
 
 import classes.Transaction;
+import models.Task2Model;
 import models.TransactionSumModel;
 import org.sqlite.JDBC;
 import java.sql.*;
@@ -77,6 +78,25 @@ public class DBworker {
     }
 
     public void printTask2(){
+        var models = new ArrayList<Task2Model>();
+        try (var statement = this.connection.createStatement()){
+            var resultSet = statement.executeQuery("select distinct avg(Value) as 'Среднее значение', count(Period) as 'Количество', Period\n" +
+                    "from transactions " +
+                    "where Unit = 'Dollars' and  Value is not null\n" +
+                    "group by Period");
+            while(resultSet.next()){
+                var model = new Task2Model();
+                model.avg = Float.parseFloat(resultSet.getString("Среднее значение"));
+                model.count = Integer.parseInt(resultSet.getString("Количество"));
+                model.period = resultSet.getString("Period");
+                models.add(model);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        for(var model: models){
+            System.out.println(model.toString());
+        }
     }
 }

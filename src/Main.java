@@ -1,6 +1,7 @@
 import chart.printer.ChartPrinter;
 import date.base.DBworker;
 import models.TransactionSumModel;
+import parse.Parser;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,8 +26,8 @@ public class Main {
     }
     public static void main(String[] args) throws IOException, SQLException {
         var filePath = "./transactions.csv";
-        //var parser = new Parser();
-        //var transList = parser.ParseTransactionsCsv(filePath);
+        var parser = new Parser();
+        var transList = parser.ParseTransactionsCsv(filePath);
         var db = DBworker.getInstance();
         var result = db.getTransactionSumModels().stream().map(model -> {
             var newModel = new TransactionSumModel();
@@ -35,7 +36,8 @@ public class Main {
             return newModel;
         }).collect(Collectors.toList());
         var chartPrinter = new ChartPrinter();
-        chartPrinter.createChart(result);
+        chartPrinter.createChart(result);           //создаёт файл с таблицей
+        db.printTask2(); //принтит в консоль значения из второго задания
     }
 
 
