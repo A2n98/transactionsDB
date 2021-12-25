@@ -38,6 +38,7 @@ public class Main {
         var chartPrinter = new ChartPrinter();
         chartPrinter.createChart(result);           //создаёт файл с таблицей
         db.printTask2(); //принтит в консоль значения из второго задания
+        db.printTask3(); //Выводит на консоль задание 3
     }
 
 

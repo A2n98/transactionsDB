@@ -4,8 +4,11 @@ import classes.Transaction;
 import models.Task2Model;
 import models.TransactionSumModel;
 import org.sqlite.JDBC;
+
+import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DBworker {
 
@@ -98,5 +101,40 @@ public class DBworker {
         for(var model: models){
             System.out.println(model.toString());
         }
+    }
+
+    public void printTask3(){
+        try (var statement = this.connection.createStatement()){
+            var min2014 = statement.executeQuery(createSQLmin("2014", "min")).getString("Value");
+            var max2014 = statement.executeQuery(createSQLmin("2014", "max")).getString("Value");
+            var min2016 = statement.executeQuery(createSQLmin("2016", "min")).getString("Value");
+            var max2016 = statement.executeQuery(createSQLmin("2016", "max")).getString("Value");
+            var min2020 = statement.executeQuery(createSQLmin("2020", "min")).getString("Value");
+            var max2020 = statement.executeQuery(createSQLmin("2020", "max")).getString("Value");
+
+            System.out.println("2014 год - максимум: " + max2014 + " минимум: " + min2014);
+            System.out.println("2016 год - максимум: " + max2016 + " минимум: " + min2016);
+            System.out.println("2020 год - максимум: " + max2020 + " минимум: " + min2020);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String createSQLmin(String year, String maxOrMin){
+        var newYear = " '" + year + "%' ";
+        var result = "select Value " +
+                "from Transactions " +
+                "where Unit = 'Dollars' and Period like" + newYear + "and Value is not null\n";
+
+        if(Objects.equals(maxOrMin, "min")){
+            result += "order by Value desc\n" +
+                    "limit 1";
+        }
+        if(Objects.equals(maxOrMin, "max")){
+            result += "order by Value\n" +
+                    "limit 1";
+        }
+
+        return result;
     }
 }
